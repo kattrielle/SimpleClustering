@@ -85,14 +85,11 @@ $(document).ready(function() {
     {
         try {
             $("#outputDiv").text("");
-            var num = $("#numberOfClusters").val();
+            var num = $("#stepNumber").val();
             var clusterList;
             var closestCluster;
             var currPict;
             var distances = [];
-            if (num > pictures.length) {
-                return;
-            }
             clusterList = [ CreateCluster(pictures[0]) ];
             for (var i=1; i< pictures.length; i++) {
                 currPict = {src: pictures[i], map: MakingPixelMap(pictures[i]) };
@@ -103,30 +100,7 @@ $(document).ready(function() {
                 closestCluster = FindMin( distances, num );
                     if (closestCluster == undefined ) {
                         clusterList.push( CreateCluster(pictures[i]) );
-                    }
-            }
-            while (moveFlag) { //Написать условие!!!
-                moveFlag = false;
-                clusterCenters = CountCenters( clusterList );
-                newClusterList = [];
-                $.each( clusterList, function(clusterNum, cluster)
-                {
-                    $.each(cluster, function(index, pict)
-                    {
-                        for (var i=0; i< clusterCenters.length; i++ ) {
-                            distances[i] = EuclideanDistance(pict["map"], clusterCenters[i]);
-                        }
-                        closestCluster = FindMin( distances );
-                        if ( closestCluster != clusterNum ) {
-                            moveFlag = true;
-                        }
-                        if (newClusterList[closestCluster] == undefined) {
-                            newClusterList[closestCluster] = [];
-                        }
-                        newClusterList[closestCluster].push( pict );
-                    });
-                }); 
-                clusterList = newClusterList;
+                    } else clusterList[closestCluster]["points"].push( currPict );
             }
             ShowPictures( clusterList );
         }
@@ -143,7 +117,7 @@ $(document).ready(function() {
         $.each(clusters, function( index, clstr)
         {
             $("#outputDiv").append( index );
-            $.each( clstr, function(num,picture)
+            $.each( clstr["points"], function(num,picture)
             {
                 $("#outputDiv").append("<img src="+picture["src"]+
                     " class=drawing-area>");
@@ -175,53 +149,6 @@ $(document).ready(function() {
         return Math.sqrt(sum);
     }
     
-    function CountCenters ( clusters )
-    {
-        console.log( clusters );
-        try {
-            var centers = [];
-            $.each( clusters , function(clusterNum, cluster)
-            {
-                var cntr = [];
-                var pictureLength = imageField.height * imageField.width;
-                for ( var i=0; i<pictureLength; i++ ) {
-                    cntr.push(0);
-                }
-                $.each( cluster, function(index, pict)
-                {
-                    for (var i=0; i< pictureLength; i++) {
-                        cntr[i] += pict["map"][i];
-                    }
-                });
-                for (var i=0; i<pictureLength; i++ )
-                    cntr[i] /= cluster.length;
-                centers[clusterNum] = cntr;
-            });
-            return centers;
-        }
-        catch ( err ) {
-            console.log( err );
-            console.log( err.message );
-            console.log( err.stack );
-        }
-    }
-    
-    function CreateClusterParts( num )
-    {
-        var clusters = [];
-        var clstr = {};
-        for (var i=0; i < pictures.length; i++) {
-            clstr = clusters[ i % num ];
-            if (clstr == undefined) {
-                clstr = [];
-            }
-            clstr.push( {
-                src:pictures[i], 
-                map:MakingPixelMap( pictures[i] )
-            } );
-            clusters[ i % num ] = clstr;
-        }
-        return clusters;
-    }
+ 
 }
 );
