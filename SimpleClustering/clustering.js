@@ -13,7 +13,8 @@ $(document).ready(function() {
     $(document).mouseup( MouseDrawEnd );
     $("#clearButton").click( ClearDrawingArea );
     $("#addButton").click( AddPicture );
-    $("#clusteringForm").submit( Clustering );
+//    $("#clusteringForm").submit( Clustering );
+    $("#clusteringForm").submit( function() {Clustering();Clustering();} );
     $("#resetButton").click( ResetData );
     
     function MouseDrawStart( event )
