@@ -1,3 +1,4 @@
+//Простая кластеризация
 $(document).ready(function() {
     var imageField = document.getElementById("picture");
     var ctx = imageField.getContext('2d');
